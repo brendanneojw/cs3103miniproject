@@ -6,6 +6,8 @@ from email.mime.multipart import MIMEMultipart
 import argparse
 import requests
 import re
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # Configuration constants
 SMTP_SERVER = 'smtp.gmail.com'
@@ -96,7 +98,8 @@ def send_emails_with_report(csv_file, department_code, email_template_path, smtp
 # Function to get and display the counter
 def display_counter():
     try:
-        response = requests.get(COUNTER_URL)
+        # Pass verify=False to skip SSL verification
+        response = requests.get(COUNTER_URL, verify=False)
         if response.status_code == 200:
             print(response.json()['message'])
         else:
@@ -117,9 +120,9 @@ if __name__ == "__main__":
         SMTP_USER = input("Enter your email address: ")
         SMTP_PASSWORD = input("Enter your email password (use an app password if necessary): ")
 
-        csv_file_path = input("Enter mail data csv file name (such as maildata.csv), file should be in same foler/directory as this app: ")
+        csv_file_path = input("Enter mail data csv file name (such as maildata.csv), file should be in same folder/directory as this app: ")
         department_code = input("Enter department code (or 'all' for all departments): ")
-        email_template_path = input("Enter email template file name (such as email_template.txt), file should be in same foler/directory as this app: ")
+        email_template_path = input("Enter email template file name (such as email_template.txt), file should be in same folder/directory as this app: ")
 
         send_emails_with_report(csv_file_path, department_code, email_template_path, SMTP_USER, SMTP_PASSWORD)
 
