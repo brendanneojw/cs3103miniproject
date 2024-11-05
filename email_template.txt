@@ -1,0 +1,8 @@
+Welcome to the 25th STePS
+<html>
+<body>
+<p>Hello #name#,</p>
+<p>As a member of SOC department/#department#. You are invited to the 25th STePS!</p>
+<p>Best regards,<br>Team STePS</p>
+</body>
+</html>
