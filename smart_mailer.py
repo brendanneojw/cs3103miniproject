@@ -1,3 +1,4 @@
+import os
 import smtplib
 import time
 import csv
@@ -19,8 +20,91 @@ DELAY_BETWEEN_EMAILS = 5  # Delay in seconds to avoid spam
 # Regular expression for validating email format
 EMAIL_REGEX = r'^[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,}$'
 
+
+# Function to check email validity
 def is_valid_email(email):
     return re.match(EMAIL_REGEX, email) is not None
+
+
+# Function to check email validity
+def check_email():
+    while True:
+            SMTP_USER = input("Enter your email address: ")
+            if not is_valid_email(SMTP_USER):
+                print("Invalid email address. Please try again.")
+            else: 
+                return SMTP_USER
+            
+
+# Function to check email validity
+def check_txt_file():
+    while True:
+        email_template_path = input("Enter email template file name (such as email_template.txt), file should be in same folder/directory as this app: ")
+        if not check_txt_file_extension(email_template_path):
+            print("Invalid file extension. Please try again.")
+        else:
+            return email_template_path
+
+
+# Function to check txt file extension
+def check_txt_file_extension(file_path):
+    if not file_path.endswith('.txt'):
+        print("File extension is not .txt")
+        return False
+    
+    if not os.path.exists(file_path):
+        print("File does not exist.")
+        return False
+    
+    with open(file_path, 'r') as file:
+        content = file.read()
+        required_elements = ["<html>", "<body>", "#name#", "#department#", "</body>", "</html>"]
+        start_index = 0
+        for element in required_elements:
+            start_index = content.find(element, start_index)
+            if start_index == -1:
+                print(f"Missing required element: {element}")
+                return False
+        return True
+    
+
+# Function to check CSV validity
+def check_csv_file_validity(file_path):
+    if not file_path.endswith('.csv'):
+        print("File extension is not .csv")
+        return False
+    
+    if not os.path.exists(file_path):
+        print("File does not exist.")
+        return False
+    
+    with open(file_path, 'r') as file:
+        reader = csv.DictReader(file)
+        field_names = reader.fieldnames
+        expected_fields = ['email', 'name', 'department_code']
+        if field_names[:3] != expected_fields:
+                print("The first 3 fields are not in the expected order.")
+                return False
+        # for row in reader:
+        #     if any(field == '' for field in row.values()):
+        #         print("There are blank fields in the data.")
+        #     extra_fields = set(field_names) - set(expected_fields)
+        #     if extra_fields:
+        #         for extra_field in extra_fields:
+        #             del row[extra_field]
+    return True
+
+
+# Function to check CSV file
+def check_csv_file():
+    while True:
+        file_path = input("Enter mail data csv file name (such as maildata.csv), file should be in same folder/directory as this app: ")
+        if not check_csv_file_validity(file_path):
+            print("Invalid file extension. Please try again.")
+        else:
+            return file_path
+        
+
 # Function to read CSV and filter based on department code
 def read_csv(file_path, department_code):
     filtered_list = []
@@ -33,6 +117,7 @@ def read_csv(file_path, department_code):
                 else:
                     print(f"Invalid email format: {row['email']} - Skipping")
     return filtered_list
+
 
 # Function to read subject and body from a text file
 def read_email_template(file_path):
@@ -108,7 +193,6 @@ def display_counter():
         print(f"Error fetching counter data: {e}")
 
 
-
 # Main function with argparse
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Smart mailer script with email sending and tracking functionalities.")
@@ -117,12 +201,11 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     if args.action == 'send':
-        SMTP_USER = input("Enter your email address: ")
+        SMTP_USER = check_email()
         SMTP_PASSWORD = input("Enter your email password (use an app password if necessary): ")
-
-        csv_file_path = input("Enter mail data csv file name (such as maildata.csv), file should be in same folder/directory as this app: ")
+        csv_file_path = check_csv_file()
         department_code = input("Enter department code (or 'all' for all departments): ")
-        email_template_path = input("Enter email template file name (such as email_template.txt), file should be in same folder/directory as this app: ")
+        email_template_path = check_txt_file()
 
         send_emails_with_report(csv_file_path, department_code, email_template_path, SMTP_USER, SMTP_PASSWORD)
 
