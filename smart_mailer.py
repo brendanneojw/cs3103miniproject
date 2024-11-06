@@ -41,7 +41,7 @@ def check_txt_file():
     while True:
         email_template_path = input("Enter email template file name (such as email_template.txt), file should be in same folder/directory as this app: ")
         if not check_txt_file_extension(email_template_path):
-            print("Invalid file extension. Please try again.")
+            continue
         else:
             return email_template_path
 
@@ -60,11 +60,16 @@ def check_txt_file_extension(file_path):
         content = file.read()
         required_elements = ["<html>", "<body>", "#name#", "#department#", "</body>", "</html>"]
         start_index = 0
+        list_of_missing_elements = ""
+        flag = False
         for element in required_elements:
             start_index = content.find(element, start_index)
             if start_index == -1:
-                print(f"Missing required element: {element}")
-                return False
+                list_of_missing_elements += element + ", "
+                flag = True
+        if flag:
+            print(f"Missing elements in the file: {list_of_missing_elements}")
+            return False
         return True
     
 
@@ -83,7 +88,7 @@ def check_csv_file_validity(file_path):
         field_names = reader.fieldnames
         expected_fields = ['email', 'name', 'department_code']
         if field_names[:3] != expected_fields:
-                print("The first 3 fields are not in the expected order.")
+                print("The first 3 fields are not in the expected order / incorrect field names.")
                 return False
     return True
 
@@ -93,7 +98,7 @@ def check_csv_file():
     while True:
         file_path = input("Enter mail data csv file name (such as maildata.csv), file should be in same folder/directory as this app: ")
         if not check_csv_file_validity(file_path):
-            print("Invalid file extension. Please try again.")
+            continue
         else:
             return file_path
         
