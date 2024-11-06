@@ -201,13 +201,13 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     if args.action == 'send':
-        SMTP_USER = check_email()
-        SMTP_PASSWORD = input("Enter your email password (use an app password if necessary): ")
+        smtp_user = check_email()
+        smtp_password = input("Enter your email password (use an app password if necessary): ")
         csv_file_path = check_csv_file()
         department_code = input("Enter department code (or 'all' for all departments): ")
         email_template_path = check_txt_file()
 
-        send_emails_with_report(csv_file_path, department_code, email_template_path, SMTP_USER, SMTP_PASSWORD)
+        send_emails_with_report(csv_file_path, department_code, email_template_path, smtp_user, smtp_password)
 
     elif args.action == 'count':
         display_counter()
