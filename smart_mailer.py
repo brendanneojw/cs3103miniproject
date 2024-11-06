@@ -196,14 +196,6 @@ if __name__ == "__main__":
     if args.action == 'send':
         smtp_user = check_email()
         smtp_password = input("Enter your email password (use an app password if necessary): ")
-        # check for correct login details before continuing
-        # try:
-        #     with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
-        #         server.starttls()
-        #         server.login(smtp_user, smtp_password)
-        # except Exception as e:
-        #     print(f"Failed to login using the provided credentials: {e}")
-        #     exit(1)
         csv_file_path = check_csv_file()
         department_code = input("Enter department code (or 'all' for all departments): ")
         email_template_path = check_txt_file()
