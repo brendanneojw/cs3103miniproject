@@ -1,3 +1,21 @@
+"""
+Smart Mailer Script with Email Sending and Tracking Functionality
+
+This script automates the process of sending customized emails to a list of recipients from a CSV file.
+Each email can be customized with recipient-specific details (like name and department) and includes 
+a tracking pixel to monitor if the email is opened. The script also includes a counter feature to 
+display tracking information and delay control to avoid sending emails too quickly.
+
+Usage:
+    Run the script with one of the following actions:
+        - 'send': Send emails to recipients specified in a CSV file using a specified email template.
+        - 'count': Display the email open tracking counter from a remote server.
+
+Example:
+    python mailer.py send
+    python mailer.py count
+"""
+
 import os
 import smtplib
 import time
@@ -23,31 +41,61 @@ EMAIL_REGEX = r'^[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,}$'
 
 # Function to check email validity
 def is_valid_email(email):
+    """
+    Checks if an email address is in a valid format.
+
+    Args:
+        email (str): The email address to validate.
+
+    Returns:
+        bool: True if valid, False otherwise.
+    """
     return re.match(EMAIL_REGEX, email) is not None
 
 
 # Function to check email validity
 def check_email():
+    """
+    Prompts user for an email address and validates it.
+
+    Returns:
+        str: The validated email address.
+    """
     while True:
-            SMTP_USER = input("Enter your email address: ")
-            if not is_valid_email(SMTP_USER):
-                print("Invalid email address. Please try again.")
-            else: 
-                return SMTP_USER
+        SMTP_USER = input("Enter your email address: ")
+        if not is_valid_email(SMTP_USER):
+            print("Invalid email address. Please try again.")
+        else: 
+            return SMTP_USER
             
 
 # Function to check email validity
 def check_txt_file():
+    """
+    Prompts for an email template file path and validates the file contents.
+
+    Returns:
+        str: The file path if valid.
+    """
     while True:
         email_template_path = input("Enter email template file name (such as email_template.txt), file should be in same folder/directory as this app: ")
         if not check_txt_file_extension(email_template_path):
-            print("Invalid file extension. Please try again.")
+            continue
         else:
             return email_template_path
 
 
 # Function to check txt file extension
 def check_txt_file_extension(file_path):
+    """
+    Checks if a text file  has the required HTML elements.
+
+    Args:
+        file_path (str): Path to the text file.
+
+    Returns:
+        bool: True if file is valid, False otherwise.
+    """
     if not file_path.endswith('.txt'):
         print("File extension is not .txt")
         return False
@@ -70,6 +118,15 @@ def check_txt_file_extension(file_path):
 
 # Function to check CSV validity
 def check_csv_file_validity(file_path):
+    """
+    Checks the format and required fields of a CSV file.
+
+    Args:
+        file_path (str): Path to the CSV file.
+
+    Returns:
+        bool: True if valid, False otherwise.
+    """
     if not file_path.endswith('.csv'):
         print("File extension is not .csv")
         return False
@@ -83,23 +140,39 @@ def check_csv_file_validity(file_path):
         field_names = reader.fieldnames
         expected_fields = ['email', 'name', 'department_code']
         if field_names[:3] != expected_fields:
-                print("The first 3 fields are not in the expected order.")
+                print("The first 3 fields are not in the expected order/incorrect field name.")
                 return False
     return True
 
 
 # Function to check CSV file
 def check_csv_file():
+    """
+    Prompts for the recipient CSV file path and validates it.
+
+    Returns:
+        str: The file path if valid.
+    """
     while True:
         file_path = input("Enter mail data csv file name (such as maildata.csv), file should be in same folder/directory as this app: ")
         if not check_csv_file_validity(file_path):
-            print("Invalid file extension. Please try again.")
+            continue
         else:
             return file_path
         
 
 # Function to read CSV and filter based on department code
 def read_csv(file_path, department_code):
+    """
+    Reads and filters recipients based on department code.
+
+    Args:
+        file_path (str): Path to the CSV file.
+        department_code (str): Department code or 'all' for all departments.
+
+    Returns:
+        list: List of valid recipients.
+    """
     filtered_list = []
     with open(file_path, 'r') as file:
         reader = csv.DictReader(file)
@@ -114,6 +187,15 @@ def read_csv(file_path, department_code):
 
 # Function to read subject and body from a text file
 def read_email_template(file_path):
+    """
+    Reads subject and body from a template text file.
+
+    Args:
+        file_path (str): Path to the text file.
+
+    Returns:
+        tuple: (subject, body) with the email's subject and body.
+    """
     with open(file_path, 'r') as file:
         content = file.read().split('\n', 1)
         subject = content[0]
@@ -122,6 +204,21 @@ def read_email_template(file_path):
 
 # Function to send email
 def send_email(to_email, name, department, subject, body, smtp_user, smtp_password):
+    """
+    Sends a customized email to a single receipient.
+
+    Args:
+        to_email (str): Recipient's email address.
+        name (str): Recipient's name.
+        department (str): Recipient's department code.
+        subject (str): Email subject.
+        body (str): Email body.
+        smtp_user (str): Sender's email address.
+        smtp_password (str): Sender's email password.
+
+    Returns:
+        bool: True if email sent successfully, False otherwise.
+    """
     try:
         # Use the predefined tracking URL
         tracking_url = TRACKING_IMAGE_URL
@@ -149,6 +246,16 @@ def send_email(to_email, name, department, subject, body, smtp_user, smtp_passwo
 
 # Function to send emails with a delay and report results
 def send_emails_with_report(csv_file, department_code, email_template_path, smtp_user, smtp_password):
+    """
+    Sends emails to all filtered recipients with a delay and prints a report.
+
+    Args:
+        csv_file (str): Path to the CSV file.
+        department_code (str): Department code or 'all' for all departments.
+        email_template_path (str): Path to the email template file.
+        smtp_user (str): Sender's email address.
+        smtp_password (str): Sender's email password.
+    """
     recipients = read_csv(csv_file, department_code)
     subject, body_template = read_email_template(email_template_path)
 
@@ -175,6 +282,9 @@ def send_emails_with_report(csv_file, department_code, email_template_path, smtp
 
 # Function to get and display the counter
 def display_counter():
+    """ 
+    Display the counter from the tracking server. 
+    """
     try:
         # Pass verify=False to skip SSL verification
         response = requests.get(COUNTER_URL, verify=False)
