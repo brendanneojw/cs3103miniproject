@@ -15,7 +15,7 @@ SMTP_SERVER = 'smtp.gmail.com'
 SMTP_PORT = 587
 TRACKING_IMAGE_URL = 'http://13.215.200.90/track.png'
 COUNTER_URL = 'http://13.215.200.90/counter'
-DELAY_BETWEEN_EMAILS = 2  # Delay in seconds to avoid spam
+DELAY_BETWEEN_EMAILS = 5  # Delay in seconds to avoid spam
 
 # Regular expression for validating email format
 EMAIL_REGEX = r'^[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,}$'
