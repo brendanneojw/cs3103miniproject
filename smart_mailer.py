@@ -31,7 +31,7 @@ def check_email():
     while True:
         SMTP_USER = input("Enter your email address: ")
         if not is_valid_email(SMTP_USER):
-            print("Invalid email address. Please try again.")
+            print("Invalid email address format. Please try again.")
         else: 
             return SMTP_USER
             
