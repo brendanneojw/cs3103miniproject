@@ -15,7 +15,7 @@ SMTP_SERVER = 'smtp.gmail.com'
 SMTP_PORT = 587
 TRACKING_IMAGE_URL = 'http://13.215.200.90/track.png'
 COUNTER_URL = 'http://13.215.200.90/counter'
-DELAY_BETWEEN_EMAILS = 5  # Delay in seconds to avoid spam
+DELAY_BETWEEN_EMAILS = 2  # Delay in seconds to avoid spam
 
 # Regular expression for validating email format
 EMAIL_REGEX = r'^[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,}$'
@@ -85,13 +85,6 @@ def check_csv_file_validity(file_path):
         if field_names[:3] != expected_fields:
                 print("The first 3 fields are not in the expected order.")
                 return False
-        # for row in reader:
-        #     if any(field == '' for field in row.values()):
-        #         print("There are blank fields in the data.")
-        #     extra_fields = set(field_names) - set(expected_fields)
-        #     if extra_fields:
-        #         for extra_field in extra_fields:
-        #             del row[extra_field]
     return True
 
 
@@ -203,6 +196,14 @@ if __name__ == "__main__":
     if args.action == 'send':
         smtp_user = check_email()
         smtp_password = input("Enter your email password (use an app password if necessary): ")
+        # check for correct login details before continuing
+        # try:
+        #     with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
+        #         server.starttls()
+        #         server.login(smtp_user, smtp_password)
+        # except Exception as e:
+        #     print(f"Failed to login using the provided credentials: {e}")
+        #     exit(1)
         csv_file_path = check_csv_file()
         department_code = input("Enter department code (or 'all' for all departments): ")
         email_template_path = check_txt_file()
